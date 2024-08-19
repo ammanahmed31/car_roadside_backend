@@ -3,6 +3,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createUser, findUserByUsername, updateUser } = require('../models/user');
+const db = require('../database');
+
 
 const router = express.Router();
 
@@ -54,32 +56,9 @@ router.post('/login', (req, res) => {
 });
 
 
-// Update User Info
-router.put('/update', (req, res) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ error: 'Authorization token is required' });
-    }
-    jwt.verify(token, SECRET_KEY, (err, decoded) => {
-        if (err) return res.status(401).json({ error: 'Unauthorized' });
-        const { name, username, email, address, mobile_no } = req.body;
-        if (!name || !username || !email) {
-            return res.status(400).json({ error: 'Name, username, and email are required' });
-        }
-        updateUser(decoded.id, { name, username, email, address, mobile_no }, (err) => {
-            if (err) {
-                if (err.message.includes('UNIQUE constraint failed')) {
-                    return res.status(409).json({ error: 'Username or email already exists' });
-                }
-                return res.status(500).json({ error: err.message });
-            }
-            res.json({ message: 'User updated successfully' });
-        });
-    });
-});
-
 // Fetch User Details with Auth
 router.get('/user/:identifier', (req, res) => {
+    console.log('Fetching user details for:', req.params.identifier);
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) {
@@ -102,6 +81,31 @@ router.get('/user/:identifier', (req, res) => {
             if (!user) return res.status(404).json({ error: 'User not found' });
             const { password, ...userWithoutPassword } = user;
             res.json(userWithoutPassword);
+        });
+    });
+});
+
+
+// Update User Info
+router.put('/update', (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ error: 'Authorization token is required' });
+    }
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(401).json({ error: 'Unauthorized' });
+        const { name, username, email, address, mobile_no } = req.body;
+        if (!name || !username || !email) {
+            return res.status(400).json({ error: 'Name, username, and email are required' });
+        }
+        updateUser(decoded.id, { name, username, email, address, mobile_no }, (err) => {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    return res.status(409).json({ error: 'Username or email already exists' });
+                }
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ message: 'User updated successfully' });
         });
     });
 });
