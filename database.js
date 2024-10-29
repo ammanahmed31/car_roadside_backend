@@ -1,4 +1,3 @@
-// database.js
 const sqlite3 = require('sqlite3').verbose();
 
 // Connect to a persistent database file
@@ -11,6 +10,7 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
 });
 
 db.serialize(() => {
+    // Create users table
     db.run(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +20,19 @@ db.serialize(() => {
             address TEXT,
             mobile_no TEXT,
             password TEXT NOT NULL
+        )
+    `);
+
+    // Create contacts table with an added email field
+    db.run(`
+        CREATE TABLE IF NOT EXISTS contacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            name TEXT NOT NULL,
+            phoneNumber TEXT,
+            email TEXT NOT NULL,
+            relationship TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         )
     `);
 });
