@@ -32,12 +32,20 @@ const deleteContact = (contactId, callback) => {
 };
 
 // Find contacts by user ID
-const getContactsByUserId = (userId, callback) => {
-    const query = `SELECT * FROM contacts WHERE user_id = ?`;
-    db.all(query, [userId], (err, rows) => {
-        if (err) return callback(err);
-        callback(null, rows);
+const getContactsByUserId = (userId) => {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT contacts.*, users.fcmToken AS fcmToken
+            FROM contacts
+            LEFT JOIN users ON contacts.email = users.email
+            WHERE contacts.user_id = ?
+        `;
+        db.all(query, [userId], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows);
+        });
     });
 };
+
 
 module.exports = { createContact, updateContact, deleteContact, getContactsByUserId };

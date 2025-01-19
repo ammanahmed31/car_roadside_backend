@@ -32,6 +32,7 @@ db.serialize(() => {
             phoneNumber TEXT,
             email TEXT NOT NULL,
             relationship TEXT NOT NULL,
+            fcmToken TEXT,  -- Optional, for app users
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     `);

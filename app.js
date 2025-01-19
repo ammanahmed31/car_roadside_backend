@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const sosRoutes = require('./routes/sosRoutes');
 var cors = require('cors');
 
 const app = express();
@@ -21,6 +22,9 @@ app.use('/api/users', userRoutes);
 
 // Use contact routes
 app.use('/api/contacts', contactRoutes);
+
+// Mount SOS routes
+app.use('/api/sos', sosRoutes);
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
