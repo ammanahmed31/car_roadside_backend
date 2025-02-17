@@ -23,7 +23,6 @@ db.serialize(() => {
         )
     `);
 
-    // Create contacts table with an added email field
     db.run(`
         CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +31,20 @@ db.serialize(() => {
             phoneNumber TEXT,
             email TEXT NOT NULL,
             relationship TEXT NOT NULL,
+            app_id TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    `);
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS sos_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            latitude REAL NOT NULL,
+            longitude REAL NOT NULL,
+            message TEXT NOT NULL,
+            isAcknowledged INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     `);
