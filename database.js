@@ -37,6 +37,18 @@ db.serialize(() => {
             FOREIGN KEY (created_by) REFERENCES users(id)
         )
     `);
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS sos_requests (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          latitude REAL NOT NULL,
+          longitude REAL NOT NULL,
+          timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+          isAcknowledged INTEGER DEFAULT 0,
+          FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
 });
 
 module.exports = db;
