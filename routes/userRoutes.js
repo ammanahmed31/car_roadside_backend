@@ -34,8 +34,10 @@ router.post('/register', async (req, res) => {
 
 
 // User Login
+const { updateFcmToken } = require('../models/user');
+
 router.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, fcmToken } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password are required' });
     }
@@ -48,12 +50,23 @@ router.post('/login', (req, res) => {
             if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
             const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+
+            // Update fcmToken
+            if (fcmToken) {
+                updateFcmToken(user.id, fcmToken, (err) => {
+                    if (err) {
+                        console.error('Failed to update FCM token:', err);
+                    }
+                });
+            }
+
             res.json({ message: 'Login successful', token });
         } catch (error) {
             res.status(500).json({ error: 'Server error during login' });
         }
     });
 });
+
 
 
 // Fetch User Details with Auth

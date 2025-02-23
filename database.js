@@ -19,7 +19,8 @@ db.serialize(() => {
             email TEXT NOT NULL UNIQUE,
             address TEXT,
             mobile_no TEXT,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            fcmToken TEXT
         )
     `);
 
@@ -28,12 +29,12 @@ db.serialize(() => {
         CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
+            created_by INTEGER,
             name TEXT NOT NULL,
             phoneNumber TEXT,
             email TEXT NOT NULL,
             relationship TEXT NOT NULL,
-            fcmToken TEXT,  -- Optional, for app users
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            FOREIGN KEY (created_by) REFERENCES users(id)
         )
     `);
 });

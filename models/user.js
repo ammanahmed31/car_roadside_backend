@@ -2,13 +2,14 @@
 const db = require('../database');
 
 const createUser = (user, callback) => {
-    const { name, username, email, address, mobile_no, password } = user;
-    const query = `INSERT INTO users (name, username, email, address, mobile_no, password) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.run(query, [name, username, email, address, mobile_no, password], function (err) {
+    const { name, username, email, address, mobile_no, password, fcmToken = null } = user;
+    const query = `INSERT INTO users (name, username, email, address, mobile_no, password, fcmToken) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    db.run(query, [name, username, email, address, mobile_no, password, fcmToken], function (err) {
         if (err) return callback(err);
         callback(null, { id: this.lastID, ...user });
     });
 };
+
 
 const findUserByUsername = (username, callback) => {
     const query = `SELECT * FROM users WHERE username = ?`;
@@ -31,8 +32,19 @@ const updateUser = (id, user, callback) => {
     });
 };
 
+const updateFcmToken = (id, fcmToken, callback) => {
+    const query = `UPDATE users SET fcmToken = ? WHERE id = ?`;
+    db.run(query, [fcmToken, id], function (err) {
+        if (err) return callback(err);
+        callback(null);
+    });
+};
+
 module.exports = {
     createUser,
     findUserByUsername,
     updateUser,
+    updateFcmToken,
 };
+
+
